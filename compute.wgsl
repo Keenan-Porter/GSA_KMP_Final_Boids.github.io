@@ -10,6 +10,8 @@ const SIZE:f32 = 60.;
 @group(0) @binding(2) var<storage, read_write> state_w: array<Particle>;
 @group(0) @binding(3) var<storage, read_write> binSizes : array<u32>;
 @group(0) @binding(4) var<storage, read_write> prefixes : array<u32>;
+@group(0) @binding(5) var<uniform> audio : vec3f;
+@group(0) @binding(6) var<uniform> frame: f32;
 
 fn processBin(
   boid: Particle,
@@ -54,6 +56,14 @@ fn processBin(
 @workgroup_size(64,1)
 
 fn cs(@builtin(global_invocation_id) cell:vec3u)  {
+
+  var akeep = 0.0175;
+  var aspeed = 5.0;
+  if(audio[1] > 0){
+    akeep = 0.05 * audio[1];
+    aspeed += audio[2] * 50.;
+  }
+
   let idx            = cell.x;
   if( idx > arrayLength(&state_r) ){ return; }
   
@@ -85,7 +95,7 @@ fn cs(@builtin(global_invocation_id) cell:vec3u)  {
   boid.vel += (center-boid.pos);
 
   // apply effects of rule 2
-  boid.vel += keepaway * .0175;
+  boid.vel += keepaway * akeep;
 
   // apply effects of rule 3
   vel = select( vel, vel/f32(count), count != 0 ); 
@@ -96,9 +106,31 @@ fn cs(@builtin(global_invocation_id) cell:vec3u)  {
 
   // limit speed
   if( length( boid.vel ) > 10. ) {
-    boid.vel = (boid.vel / length(boid.vel)) * 5.;
+    boid.vel = (boid.vel / length(boid.vel)) * aspeed ;
   }
    
+  // boundaries
+  if(boid.pos.y >= 1. ) { 
+    boid.pos.y = -1.;
+    boid.vel.y /= 2.; 
+  }
+  if(boid.pos.y <= -1. ) { 
+    boid.pos.y = 1.;
+    boid.vel.y /= 2.; 
+  }
+  if( boid.pos.x >= 1. ) {
+    boid.pos.x = -1.;
+    boid.vel.x /= 2.;
+  }
+  if( boid.pos.x <= -1. ) {
+    boid.pos.x = 1.;
+    boid.vel.x /= 2.;
+  }
+
+  if (frame%60 == 0){
+    boid.vel.x += 2.;
+  }
+
   // calculate next position
   boid.pos = boid.pos + (2. / res) * boid.vel;
 

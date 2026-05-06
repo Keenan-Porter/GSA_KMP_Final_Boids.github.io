@@ -11,6 +11,7 @@ struct Particle {
 @group(0) @binding(0) var<uniform> frame: f32;
 @group(0) @binding(1) var<uniform> res:   vec2f;
 @group(0) @binding(2) var<storage> state: array<Particle>;
+@group(0) @binding(3) var<uniform> audio : vec3f;
 
 fn rotate(p:vec2f, a:f32) -> vec2f {
   let s = sin(a);
@@ -33,5 +34,5 @@ fn vs( input: VertexInput ) ->  @builtin(position) vec4f {
 @fragment 
 fn fs( @builtin(position) pos : vec4f ) -> @location(0) vec4f {;
   let blue = .5 + sin( frame / 60. ) * .5;
-  return vec4f( pos.x / res.x, pos.y / res.y, blue , .5 );
+  return vec4f( audio[2] * 2., 1. - (audio[2] * 2.), 0.0 , .1 );
 }

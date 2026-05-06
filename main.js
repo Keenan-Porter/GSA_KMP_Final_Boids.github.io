@@ -7,6 +7,10 @@ const sg = await seagulls.init(),
       prefix_shader = await seagulls.import( './prefix_compute.wgsl' ),
       place_shader = await seagulls.import( './place_compute.wgsl' )
 
+// Audio for interactivity
+document.body.onclick = e => Audio.start()
+const fft = sg.uniform( [0,0,0] )
+
 const NUM_PARTICLES = 65536, 
       NUM_PROPERTIES = 4,
       GRID_SIZE = 60,
@@ -34,9 +38,12 @@ const render = await sg.render({
   data: [
     frame_u,
     res_u,
-    state_b
+    state_b,
+    fft
   ],
-  onframe() { frame_u.value++ },
+  onframe() { frame_u.value++
+              fft.value = [Audio.low, Audio.mid, Audio.high]
+   },
   count: NUM_PARTICLES,
   blend: true
 })
@@ -81,9 +88,14 @@ const compute = sg.compute({
     res_u,
     sg.pingpong(state_b2, state_b),
     sizes_b,
-    prefix_b
+    prefix_b,
+    fft,
+    frame_u
   ],
-  dispatchCount:[NUM_PARTICLES / (WORKGROUP_SIZE * WORKGROUP_SIZE),1,1]
+  onframe() { frame_u.value++
+              fft.value = [Audio.low, Audio.mid, Audio.high]
+   },
+  dispatchCount:[NUM_PARTICLES / (WORKGROUP_SIZE * WORKGROUP_SIZE),1,1],
 })
 
 sg.run( sizes, prefix, place, compute, render )
