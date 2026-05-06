@@ -61,7 +61,7 @@ fn cs(@builtin(global_invocation_id) cell:vec3u)  {
   var aspeed = 5.0;
   var ashift = 1.0;
   if(audio[2] > 0){
-    akeep = 0.01 * audio[2];
+    akeep = 0.01 * audio[2] + 0.01;
     aspeed += audio[1] * 20.;
     ashift = audio[0] * 2.;
   }
