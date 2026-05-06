@@ -59,9 +59,11 @@ fn cs(@builtin(global_invocation_id) cell:vec3u)  {
 
   var akeep = 0.0175;
   var aspeed = 5.0;
-  if(audio[1] > 0){
-    akeep = 0.05 * audio[1];
-    aspeed += audio[2] * 50.;
+  var ashift = 1.0;
+  if(audio[2] > 0){
+    akeep = 0.01 * audio[2];
+    aspeed += audio[1] * 20.;
+    ashift = audio[0] * 2.;
   }
 
   let idx            = cell.x;
@@ -128,7 +130,7 @@ fn cs(@builtin(global_invocation_id) cell:vec3u)  {
   }
 
   if (frame%60 == 0){
-    boid.vel.x += 2.;
+    boid.vel.x += ashift;
   }
 
   // calculate next position

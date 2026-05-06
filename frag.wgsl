@@ -34,5 +34,6 @@ fn vs( input: VertexInput ) ->  @builtin(position) vec4f {
 @fragment 
 fn fs( @builtin(position) pos : vec4f ) -> @location(0) vec4f {;
   let blue = .5 + sin( frame / 60. ) * .5;
-  return vec4f( audio[2] * 2., 1. - (audio[2] * 2.), 0.0 , .1 );
+  let out = vec4f( 1. , 1. - (audio[2] * 2.), 1. - (audio[2] * 2.), .1 );
+  return out;
 }
