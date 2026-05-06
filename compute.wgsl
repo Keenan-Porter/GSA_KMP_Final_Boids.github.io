@@ -114,23 +114,22 @@ fn cs(@builtin(global_invocation_id) cell:vec3u)  {
   // boundaries
   if(boid.pos.y >= 1. ) { 
     boid.pos.y = -1.;
-    boid.vel.y /= 2.; 
+    boid.vel.y -= 2.; 
   }
   if(boid.pos.y <= -1. ) { 
     boid.pos.y = 1.;
-    boid.vel.y /= 2.; 
+    boid.vel.y -= 2.; 
   }
   if( boid.pos.x >= 1. ) {
     boid.pos.x = -1.;
-    boid.vel.x /= 2.;
+    boid.vel.x -= 2.;
   }
   if( boid.pos.x <= -1. ) {
     boid.pos.x = 1.;
-    boid.vel.x /= 2.;
+    boid.vel.x -= 2.;
   }
-
   if (frame%60 == 0){
-    boid.vel.x += ashift;
+    boid.vel.x -= ashift;
   }
 
   // calculate next position
